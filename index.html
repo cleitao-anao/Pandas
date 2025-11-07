@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Um Presente Especial para Você</title>
+    
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Carrega a biblioteca de animação GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    
+    <!-- Carrega a biblioteca de áudio Tone.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    
+    <style>
+        /* Importa fontes customizadas do Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Fundo gradiente para a floresta */
+            background: linear-gradient(to top, #6EE7B7, #10B981, #059669);
+            overflow: hidden; /* Previne scroll lateral/vertical */
+        }
+
+        /* Estilo para a fonte especial da caixa de mensagem */
+        .message-box {
+            font-family: 'Dancing Script', cursive;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* ESTILOS PARA O BAMBU */
+        .bamboo-stalk {
+            position: absolute;
+            background: linear-gradient(to right, #008000, #228B22, #008000); /* Gradiente para dar volume */
+            border-top-left-radius: 0.5rem; /* 8px */
+            border-top-right-radius: 0.5rem; /* 8px */
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3); /* Sombra interna para profundidade */
+            transform-origin: bottom center; /* Ponto de pivô para a animação de balanço */
+            filter: drop-shadow(5px 0px 5px rgba(0,0,0,0.3)); /* Sombra projetada */
+        }
+
+        /* Detalhes de textura (linhas e gradientes) */
+        .bamboo-detail {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.05), transparent, rgba(0,0,0,0.05)); /* Gradiente sutil */
+            opacity: 0.7;
+        }
+
+        .bamboo-line {
+            position: absolute;
+            width: 1px;
+            background-color: rgba(0,0,0,0.1);
+            opacity: 0.6;
+        }
+
+        /* "Nós" do bambu */
+        .bamboo-joint {
+            position: absolute;
+            width: 100%; /* Largura total do caule */
+            height: 8px; /* Altura do nó */
+            background-color: rgba(144, 238, 144, 0.7); /* Verde claro transparente para o anel */
+            border-radius: 9999px; /* Arredondado */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2), inset 0 1px 3px rgba(0,0,0,0.2); /* Sombra para destacar e inset para volume */
+            left: 0;
+            transform: scaleX(1.1); /* Um pouco mais largo que o caule */
+            z-index: 2; /* Para ficar acima dos detalhes de textura */
+        }
+
+
+        .panda-emoji {
+            font-size: 4rem; /* Tamanho maior para o emoji */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3); /* Sombra para destaque */
+            line-height: 1; /* Para evitar espaçamento extra */
+        }
+
+        /* CHÃO DA FLORESTA */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3rem; /* 48px */
+            background: linear-gradient(to top, #064E3B, rgba(6, 78, 59, 0)); /* Gradiente do chão para transparente */
+            z-index: 25; /* Na frente dos pandas de trás, atrás dos da frente */
+        }
+
+        /* Partículas de Luz (Vaga-lumes) */
+        .firefly {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #FFFFCC; /* Amarelo claro */
+            border-radius: 50%;
+            box-shadow: 0 0 8px 4px rgba(255,255,204,0.7); /* Brilho */
+            opacity: 0; /* Começa invisível */
+            z-index: 40; /* Acima de tudo, mas abaixo do modal */
+        }
+
+        /* === NOVOS ESTILOS: Animação Bônus (Corações) === */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ef4444; /* red-500 */
+            top: -20px; /* Começa fora da tela */
+            transform: rotate(-45deg);
+            animation: fall 5s linear forwards; /* Duração 5s, remove no final */
+            opacity: 0.9;
+            z-index: 48; /* Acima de tudo, menos do modal */
+        }
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ef4444;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -10px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: 10px;
+        }
+
+        /* Animação de queda dos corações */
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg); /* Cai até o fim da tela e gira */
+                opacity: 0;
+            }
+        }
+        
+        /* === NOVOS ESTILOS: Animação "Poof" === */
+        .poof-particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,204,0.3) 100%);
+            border-radius: 50%;
+            z-index: 99; /* Alto, mas abaixo do modal */
+            pointer-events: none; /* Não-interativo */
+        }
+
+        /* === RESPONSIVIDADE PARA CELULAR === */
+        @media (max-width: 768px) {
+            /* Diminui o tamanho da fonte dos pandas */
+            .panda-emoji {
+                font-size: 3rem; /* Era 4rem */
+            }
+
+            /* Oculta os vaga-lumes para performance e limpeza */
+            .firefly {
+                display: none;
+            }
+
+            /* Ajusta a caixa de instruções */
+            #instructions {
+                padding: 1rem; /* Era p-6 */
+                width: 90%; /* Limita a largura */
+            }
+            #instructions h2 {
+                font-size: 1.25rem; /* Era 2xl */
+            }
+            #instructions p {
+                font-size: 0.875rem; /* Era 1rem */
+            }
+
+            /* Ajusta o contador */
+            #panda-counter {
+                padding: 0.5rem; /* Era p-3 */
+                font-size: 0.875rem;
+            }
+
+            /* Ajusta a caixa de mensagem */
+            #message-box {
+                padding: 1.5rem; /* Era p-8 */
+            }
+            #message-text {
+                font-size: 1.75rem; /* Era 3xl */
+            }
+
+            /* Oculta bambus específicos em telas pequenas */
+            .bamboo-mobile-hidden {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="relative w-screen h-screen">
+        <!-- Canvas para máscara de luz/escuro da introdução -->
+        <canvas id="introCanvas" class="fixed inset-0 z-[49] pointer-events-none"></canvas>
+        
+
+    
+    <!-- Overlay e Modal (Caixa de Mensagem) -->
+    <div id="overlay" class="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-sm flex items-center justify-center z-50" style="visibility: hidden; opacity: 0;">
+        <div id="message-box" class="message-box bg-white p-8 md-p-12 rounded-2xl shadow-2xl text-center max-w-md mx-4 transform scale-0 opacity-0">
+            <p id="message-text" class="text-3xl md:text-4xl text-emerald-800 transition-all duration-300">
+                Texto da sorte aqui!
+            </p>
+            <span class="block text-sm text-gray-500 mt-4">(Clique fora para fechar)</span>
+        </div>
+    </div>
+
+    
+    <!-- A Cena Principal -->
+    <div id="scene" class="relative w-full h-full overflow-hidden">
+        
+        
+        <!-- Caixa de Instruções Iniciais -->
+        <div id="instructions" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/30 backdrop-blur-md p-6 rounded-lg text-center text-black shadow-lg z-50 transform transition-all duration-2000" style="transform: translate(-50%, -50%);">
+            <h2 class="font-bold text-2xl text-black">Encontre os Pandas!</h2>
+            <p class="mt-2 text-black">Clique nos pandas escondidos para revelar uma mensagem especial.</p>
+        </div>
+
+        
+        <!-- Contador de Pandas -->
+        <div id="panda-counter" class="absolute top-4 left-4 bg-white/30 backdrop-blur-md p-3 rounded-lg text-green-900 font-bold shadow-lg z-30 opacity-0 transition-opacity duration-1000">
+            Pandas encontrados: <span id="found-count">0</span> / <span id="total-pandas">5</span>
+        </div>
+
+        
+        <!-- Container para os Confetes/Corações -->
+        <div id="confetti-container" class="absolute inset-0 w-full h-full z-40 pointer-events-none overflow-hidden"></div>
+
+
+        
+        <!-- == OS PANDAS == -->
+        <div class="panda absolute bottom-[25%] left-[22%] cursor-pointer z-20 transform -translate-x-1/2 hover:scale-110 transition-transform" data-panda-id="1">
+            <span class="panda-emoji">🐼</span>
+        </div>
+
+        <div class="panda absolute bottom-4 left-[35%] cursor-pointer z-26 hover:scale-110 transition-transform" data-panda-id="2">
+            <span class="panda-emoji">🐼</span>
+        </div>
+        
+        <div class="panda absolute bottom-[40%] left-[62%] cursor-pointer z-20 hover:scale-110 transition-transform" data-panda-id="3">
+            <span class="panda-emoji">🐼</span>
+        </div>
+
+        <div class="panda absolute bottom-[80%] left-[78%] cursor-pointer z-20 hover:scale-110 transition-transform" data-panda-id="4">
+            <span class="panda-emoji">🐼</span>
+        </div>
+        
+        <div class="panda absolute bottom-[10%] left-[88%] cursor-pointer z-20 hover:scale-110 transition-transform" data-panda-id="5">
+            <span class="panda-emoji">🐼</span>
+        </div>
+
+
+        <!-- == OS BAMBUS == -->
+        
+        <!-- Bambus Originais -->
+        <div class="bamboo-stalk w-10 h-[90%] left-[5%] bottom-0 z-10">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 60%; top: 15%; left: 20%;"></div>
+            <div class="bamboo-line" style="height: 40%; top: 40%; left: 70%;"></div>
+            <div class="bamboo-joint" style="top: 10%;"></div>
+            <div class="bamboo-joint" style="top: 35%;"></div>
+            <div class="bamboo-joint" style="top: 60%;"></div>
+        </div>
+        <div class="bamboo-stalk w-12 h-full left-[15%] bottom-0 z-10 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 70%; top: 5%; left: 30%;"></div>
+            <div class="bamboo-line" style="height: 50%; top: 25%; left: 80%;"></div>
+            <div class="bamboo-line" style="height: 30%; top: 60%; left: 10%;"></div>
+            <div class="bamboo-joint" style="top: 15%;"></div>
+            <div class="bamboo-joint" style="top: 40%;"></div>
+            <div class="bamboo-joint" style="top: 65%;"></div>
+            <div class="bamboo-joint" style="top: 90%;"></div>
+        </div>
+        
+        <div class="bamboo-stalk w-10 h-[95%] left-[23%] bottom-0 z-21 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 50%; top: 30%; left: 15%;"></div>
+            <div class="bamboo-joint" style="top: 20%;"></div>
+            <div class="bamboo-joint" style="top: 45%;"></div>
+            <div class="bamboo-joint" style="top: 70%;"></div>
+        </div>
+        
+        <div class="bamboo-stalk w-8 h-[85%] left-[30%] bottom-0 z-30">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 65%; top: 20%; left: 60%;"></div>
+            <div class="bamboo-joint" style="top: 10%;"></div>
+            <div class="bamboo-joint" style="top: 35%;"></div>
+            <div class="bamboo-joint" style="top: 60%;"></div>
+        </div>
+        <div class="bamboo-stalk w-12 h-full left-[45%] bottom-0 z-10 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 80%; top: 10%; left: 40%;"></div>
+            <div class="bamboo-line" style="height: 45%; top: 30%; left: 85%;"></div>
+            <div class="bamboo-joint" style="top: 15%;"></div>
+            <div class="bamboo-joint" style="top: 40%;"></div>
+            <div class="bamboo-joint" style="top: 65%;"></div>
+            <div class="bamboo-joint" style="top: 90%;"></div>
+        </div>
+        
+        <div class="bamboo-stalk w-10 h-[90%] left-[55%] bottom-0 z-10 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 75%; top: 5%; left: 25%;"></div>
+            <div class="bamboo-joint" style="top: 10%;"></div>
+            <div class="bamboo-joint" style="top: 35%;"></div>
+            <div class="bamboo-joint" style="top: 60%;"></div>
+        </div>
+        <div class="bamboo-stalk w-10 h-full left-[70%] bottom-0 z-10">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 60%; top: 10%; left: 10%;"></div>
+            <div class="bamboo-line" style="height: 40%; top: 50%; left: 70%;"></div>
+            <div class="bamboo-joint" style="top: 15%;"></div>
+            <div class="bamboo-joint" style="top: 40%;"></div>
+            <div class="bamboo-joint" style="top: 65%;"></div>
+            <div class="bamboo-joint" style="top: 90%;"></div>
+        </div>
+         <div class="bamboo-stalk w-10 h-[65%] left-[38%] bottom-0 z-30 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 55%; top: 15%; left: 25%;"></div>
+            <div class="bamboo-joint" style="top: 20%;"></div>
+            <div class="bamboo-joint" style="top: 50%;"></div>
+        </div>
+         <div class="bamboo-stalk w-8 h-[75%] left-[82%] bottom-0 z-30 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 40%; top: 30%; left: 60%;"></div>
+            <div class="bamboo-joint" style="top: 10%;"></div>
+            <div class="bamboo-joint" style="top: 40%;"></div>
+        </div>
+
+        
+        <!-- == NOVOS BAMBUS ADICIONADOS == -->
+        <div class="bamboo-stalk w-8 h-[80%] left-[1%] bottom-0 z-5 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 50%; top: 20%; left: 30%;"></div>
+            <div class="bamboo-joint" style="top: 10%;"></div>
+            <div class="bamboo-joint" style="top: 45%;"></div>
+            <div class="bamboo-joint" style="top: 70%;"></div>
+        </div>
+        <div class="bamboo-stalk w-11 h-[98%] left-[8%] bottom-0 z-8 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 65%; top: 10%; left: 70%;"></div>
+            <div class="bamboo-line" style="height: 40%; top: 50%; left: 15%;"></div>
+            <div class="bamboo-joint" style="top: 5%;"></div>
+            <div class="bamboo-joint" style="top: 30%;"></div>
+            <div class="bamboo-joint" style="top: 60%;"></div>
+            <div class="bamboo-joint" style="top: 85%;"></div>
+        </div>
+        <div class="bamboo-stalk w-9 h-[70%] left-[28%] bottom-0 z-15 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 30%; top: 60%; left: 40%;"></div>
+            <div class="bamboo-joint" style="top: 25%;"></div>
+            <div class="bamboo-joint" style="top: 55%;"></div>
+        </div>
+        <div class="bamboo-stalk w-10 h-[88%] left-[33%] bottom-0 z-28 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 70%; top: 10%; left: 20%;"></div>
+            <div class="bamboo-joint" style="top: 15%;"></div>
+            <div class="bamboo-joint" style="top: 40%;"></div>
+            <div class="bamboo-joint" style="top: 70%;"></div>
+        </div>
+        <div class="bamboo-stalk w-13 h-[92%] left-[50%] bottom-0 z-12 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 85%; top: 5%; left: 50%;"></div>
+            <div class="bamboo-joint" style="top: 10%;"></div>
+            <div class="bamboo-joint" style="top: 38%;"></div>
+            <div class="bamboo-joint" style="top: 68%;"></div>
+        </div>
+        <div class="bamboo-stalk w-9 h-[75%] left-[60%] bottom-0 z-18 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 60%; top: 20%; left: 70%;"></div>
+            <div class="bamboo-joint" style="top: 18%;"></div>
+            <div class="bamboo-joint" style="top: 48%;"></div>
+        </div>
+        <div class="bamboo-stalk w-11 h-[80%] left-[75%] bottom-0 z-15 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 55%; top: 15%; left: 30%;"></div>
+            <div class="bamboo-joint" style="top: 12%;"></div>
+            <div class="bamboo-joint" style="top: 42%;"></div>
+            <div class="bamboo-joint" style="top: 72%;"></div>
+        </div>
+        <div class="bamboo-stalk w-7 h-[60%] left-[90%] bottom-0 z-8 bamboo-mobile-hidden">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 45%; top: 25%; left: 60%;"></div>
+            <div class="bamboo-joint" style="top: 15%;"></div>
+            <div class="bamboo-joint" style="top: 50%;"></div>
+        </div>
+        <div class="bamboo-stalk w-10 h-[95%] left-[95%] bottom-0 z-5">
+            <div class="bamboo-detail"></div>
+            <div class="bamboo-line" style="height: 70%; top: 5%; left: 20%;"></div>
+            <div class="bamboo-joint" style="top: 10%;"></div>
+            <div class="bamboo-joint" style="top: 35%;"></div>
+            <div class="bamboo-joint" style="top: 65%;"></div>
+            <div class="bamboo-joint" style="top: 90%;"></div>
+        </div>
+
+
+        
+        <!-- Chão da Floresta (em cima dos bambus) -->
+        <div class="ground"></div>
+
+        
+        <!-- Vaga-lumes -->
+        <div class="firefly" style="top: 20%; left: 10%;"></div>
+        <div class="firefly" style="top: 50%; left: 30%;"></div>
+        <div class="firefly" style="top: 70%; left: 50%;"></div>
+        <div class="firefly" style="top: 15%; left: 70%;"></div>
+        <div class="firefly" style="top: 40%; left: 90%;"></div>
+
+        
+    </div>
+
+    <script>
+        // JAVASCRIPT
+        
+        // =======================================================
+        // AQUI ESTÃO OS TEXTOS (BISCOITO DA SORTE)
+        // Modifique este array com suas mensagens
+        // =======================================================
+        const fortuneMessages = [
+            "Você achou um panda! E eu achei a pessoa mais incrível do mundo: você.",
+            "Assim como esse panda, meu coração se agarra em você.",
+            "Sua sorte do dia: ganhar um milhão de beijos. Pode começar a cobrar!",
+            "Esse panda é fofo, mas nem se compara ao seu sorriso.",
+            "Encontrado! E eu soube que tinha encontrado o amor da minha vida no momento em que te vi.",
+            "Prêmio! Você ganhou um vale-abraço apertado, válido para agora.",
+            "Que achado! Tão raro e especial quanto o amor que sinto por você."
+        ];
+        // =======================================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Seletores de Elementos ---
+            const pandas = document.querySelectorAll('.panda');
+            const overlay = document.getElementById('overlay');
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const instructions = document.getElementById('instructions');
+            
+            // NOVOS Seletores
+            const pandaCounter = document.getElementById('panda-counter');
+            const foundCountEl = document.getElementById('found-count');
+            const totalPandasEl = document.getElementById('total-pandas');
+            const confettiContainer = document.getElementById('confetti-container');
+
+            // --- Canvas de Luz/Esconderijo (efeito spotlight dos vaga-lumes) ---
+            const introCanvas = document.getElementById('introCanvas');
+            const ctx = introCanvas.getContext('2d');
+            const resizeCanvas = () => {
+                introCanvas.width = window.innerWidth;
+                introCanvas.height = window.innerHeight;
+            };
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const fireflies = Array.from(document.querySelectorAll('.firefly'));
+            let darkness = { a: 1 }; // 1 = totalmente escuro; 0 = claro
+
+            const renderMask = () => {
+                const w = introCanvas.width;
+                const h = introCanvas.height;
+                ctx.clearRect(0, 0, w, h);
+
+                // Camada de escuridão
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.fillStyle = `rgba(0,0,0,${darkness.a})`;
+                ctx.fillRect(0, 0, w, h);
+
+                // Fura "buracos" com base nas posições dos vaga-lumes
+                ctx.globalCompositeOperation = 'destination-out';
+                const baseRadius = 90; // raio base do facho
+                const extra = 60 * darkness.a; // mais forte quando está escuro
+                fireflies.forEach(f => {
+                    const r = f.getBoundingClientRect();
+                    const x = r.left + r.width / 2;
+                    const y = r.top + r.height / 2;
+                    const radius = baseRadius + extra;
+                    const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                    grad.addColorStop(0.0, 'rgba(0,0,0,1)');
+                    grad.addColorStop(0.6, 'rgba(0,0,0,0.4)');
+                    grad.addColorStop(1.0, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Glow sutil acima (para dar vida ao brilho)
+                ctx.globalCompositeOperation = 'lighter';
+                fireflies.forEach(f => {
+                    const r = f.getBoundingClientRect();
+                    const x = r.left + r.width / 2;
+                    const y = r.top + r.height / 2;
+                    const glowR = 40 + 20 * darkness.a;
+                    const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+                    g.addColorStop(0.0, 'rgba(255,255,200,0.25)');
+                    g.addColorStop(1.0, 'rgba(255,255,200,0)');
+                    ctx.fillStyle = g;
+                    ctx.beginPath();
+                    ctx.arc(x, y, glowR, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                ctx.globalCompositeOperation = 'source-over';
+                requestAnimationFrame(renderMask);
+            };
+            requestAnimationFrame(renderMask);
+            
+            let foundCount = 0;
+            const totalPandas = pandas.length;
+
+            // Define o número total no contador
+            totalPandasEl.textContent = totalPandas;
+
+            // --- 0. NOVO: Variação de Cor dos Bambus ---
+            // Criando 5 variações de gradiente baseadas na sua cor
+            const bambooColors = [
+                // 2 tons mais escuros
+                'linear-gradient(to right, rgb(14, 119, 14), rgb(24, 129, 24), rgb(14, 119, 14))', // Darkest
+                'linear-gradient(to right, rgb(24, 129, 24), rgb(34, 139, 34), rgb(24, 129, 24))', // Dark
+                // Tom base
+                'linear-gradient(to right, rgb(34, 139, 34), rgb(44, 149, 44), rgb(34, 139, 34))', // Mid (Base)
+                // 2 tons mais claros
+                'linear-gradient(to right, rgb(44, 149, 44), rgb(54, 159, 54), rgb(44, 149, 44))', // Light
+                'linear-gradient(to right, rgb(54, 159, 54), rgb(64, 169, 64), rgb(54, 159, 54))'  // Lightest
+            ];
+
+            // Aplica uma cor aleatória a cada bambu
+            document.querySelectorAll('.bamboo-stalk').forEach(stalk => {
+                const randomColor = bambooColors[Math.floor(Math.random() * bambooColors.length)];
+                // Sobrescreve o CSS com o novo fundo
+                stalk.style.background = randomColor;
+            });
+
+            // --- TONE.JS: Configuração do Sintetizador Mágico ---
+            let synth;
+            function initializeAudio() {
+                // Inicializa o Tone.js (necessário após interação do usuário)
+                if (!synth) {
+                    synth = new Tone.Synth({
+                        oscillator: { type: "triangle" },
+                        envelope: { attack: 0.02, decay: 0.1, sustain: 0.1, release: 0.5 },
+                        volume: -10
+                    }).toDestination();
+                }
+            }
+            // Inicia a contagem regressiva para a transição
+        let secondsLeft = 15;
+        console.log(`Tempo restante para o jogo começar: ${secondsLeft} segundos`);
+        
+        const countdownInterval = setInterval(() => {
+            secondsLeft--;
+            console.log(`Tempo restante para o jogo começar: ${secondsLeft} segundos`);
+            
+            if (secondsLeft <= 0) {
+                clearInterval(countdownInterval);
+                const instructions = document.getElementById('instructions');
+
+                // Clareia a tela animando a escuridão do canvas de 1 -> 0 em 3s
+                gsap.to(darkness, {
+                    a: 0,
+                    duration: 3,
+                    ease: 'sine.inOut',
+                    onUpdate: () => {
+                        // atualizado a cada frame pelo renderMask
+                    },
+                    onComplete: () => {
+                        // Remove o canvas após clarear
+                        const c = document.getElementById('introCanvas');
+                        if (c) c.remove();
+
+                        // Anima a caixa de instruções para baixo e fade-out
+                        instructions.style.opacity = '1';
+                        instructions.style.transform = 'translate(-50%, -50%)';
+                        gsap.to(instructions, {
+                            y: '+=600px',
+                            opacity: 0,
+                            duration: 2,
+                            ease: 'sine.inOut',
+                            onComplete: () => {
+                                instructions.remove();
+                                console.log('Jogo iniciado!');
+                            }
+                        });
+                    }
+                });
+            }
+        }, 1000);
+
+        // Ouve o primeiro clique em qualquer lugar para iniciar o áudio
+        document.body.addEventListener('click', initializeAudio, { once: true });
+
+
+            // --- 1. Animação de Balanço dos Bambus (GSAP) ---
+            // O GSAP pega TODOS os elementos com a classe .bamboo-stalk
+            gsap.utils.toArray('.bamboo-stalk').forEach(stalk => {
+                gsap.to(stalk, {
+                    rotation: gsap.utils.random(-2.5, 2.5), // Balanço leve
+                    duration: gsap.utils.random(3, 5),     // Duração aleatória
+                    transformOrigin: 'bottom center',
+                    ease: 'sine.inOut',
+                    repeat: -1,                           // Repetir para sempre
+                    yoyo: true                            // Vai e volta
+                });
+            });
+
+            // --- 2. Animação de Partículas de Luz (Vaga-lumes) (GSAP) ---
+            gsap.utils.toArray('.firefly').forEach(firefly => {
+                const animateFirefly = () => {
+                    gsap.to(firefly, {
+                        x: gsap.utils.random(-200, 200), // Movimento aleatório
+                        y: gsap.utils.random(-150, 150),
+                        opacity: gsap.utils.random(0.4, 1),
+                        scale: gsap.utils.random(0.8, 1.2),
+                        duration: gsap.utils.random(4, 8),
+                        ease: 'sine.inOut',
+                        onComplete: animateFirefly // Reinicia a animação
+                    });
+                };
+                animateFirefly(); // Inicia o movimento
+                // Fade-in inicial
+                gsap.fromTo(firefly, { opacity: 0 }, { opacity: gsap.utils.random(0.4, 1), duration: gsap.utils.random(1, 3) });
+            });
+
+
+            // --- 3. NOVO: Efeito Parallax (Apenas Desktop) ---
+            const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            if (!isTouchDevice()) {
+                const scene = document.getElementById('scene');
+                
+                // Seleciona todos os elementos que vão se mover
+                const parallaxElements = document.querySelectorAll('.bamboo-stalk, .panda');
+
+                scene.addEventListener('mousemove', (event) => {
+                    // Mapeia a posição do mouse de [0, larguraTela] para [-1, 1]
+                    const normX = gsap.utils.mapRange(0, window.innerWidth, -1, 1, event.clientX);
+                    // Mapeia a posição do mouse de [0, alturaTela] para [-0.5, 0.5] (menos movimento vertical)
+                    const normY = gsap.utils.mapRange(0, window.innerHeight, -0.5, 0.5, event.clientY);
+
+                    parallaxElements.forEach(el => {
+                        // Pega z-index, com fallback 10 se não estiver definido
+                        const zIndex = parseInt(window.getComputedStyle(el).zIndex, 10) || 10; 
+                        let strength = 0;
+
+                        // Define a "força" do movimento com base no z-index
+                        // Quanto maior o z-index, mais "perto" e mais se move
+                        if (zIndex <= 10) {
+                            strength = 5;  // Fundo (z-5, z-8, z-10) - move 5px max
+                        } else if (zIndex <= 18) {
+                            strength = 10; // Meio-fundo (z-12, z-15, z-18) - move 10px max
+                        } else if (zIndex <= 25) {
+                            strength = 18; // Meio-frente (z-20, z-21, z-25) - move 18px max
+                        } else {
+                            strength = 25; // Frente (z-26, z-28, z-30) - move 25px max
+                        }
+
+                        // Anima suavemente para a nova posição
+                        // O GSAP combina isto com a animação de 'rotation' existente
+                        gsap.to(el, {
+                            x: normX * strength, // normX é (-1 a 1), força é (pixels)
+                            y: normY * strength,
+                            duration: 0.7,
+                            ease: 'power2.out',
+                        });
+                    });
+                });
+            }
+
+
+            // --- 4. Lógica de Clique nos Pandas --- (Era o 3)
+            pandas.forEach(panda => {
+                panda.addEventListener('click', (e) => {
+                    // Impede clique duplo se o panda já foi encontrado
+                    if (panda.classList.contains('found')) return;
+                    
+                    // Toca o som mágico
+                    if (synth) {
+                        synth.triggerAttackRelease("C5", "8n");
+                    }
+
+                    // Esconde instruções no primeiro clique
+                    if (foundCount === 0) {
+                        gsap.to(instructions, { opacity: 0, duration: 0.5, onComplete: () => instructions.style.display = 'none' });
+                        // MOSTRA O CONTADOR
+                        gsap.to(pandaCounter, { opacity: 1, duration: 1.0, delay: 0.5 });
+                    }
+
+                    panda.classList.add('found'); // Marca como encontrado
+                    foundCount++;
+                    
+                    // ATUALIZA O CONTADOR
+                    foundCountEl.textContent = foundCount;
+
+                    // Pega uma mensagem aleatória
+                    const randomIndex = Math.floor(Math.random() * fortuneMessages.length);
+                    let message = fortuneMessages[randomIndex];
+
+                    // Verifica se todos foram encontrados
+                    if (foundCount === totalPandas) {
+                        // Mensagem final especial
+                        message = "Você encontrou TODOS! O maior prêmio da minha vida foi ter encontrado você. Te amo!";
+                        // DISPARA A ANIMAÇÃO BÔNUS (corações)
+                        triggerConfetti();
+                    }
+                    
+                    // Atualiza o texto do modal
+                    messageText.textContent = message;
+                    
+                    // Animação de entrada do Modal (GSAP)
+                    gsap.timeline()
+                        .to(overlay, { autoAlpha: 1, duration: 0.5, ease: 'power2.out' }) // Mostra o overlay
+                        .fromTo(messageBox, 
+                            { scale: 0.5, opacity: 0, y: -50 }, // Estado inicial
+                            { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }, // Estado final
+                            "-=0.3"); // Começa um pouco antes do overlay terminar
+                    
+                    // Esconde o panda encontrado
+                    // gsap.to(panda, { scale: 0, opacity: 0, duration: 0.7, ease: 'back.in(1.7)' }); // <- Linha antiga
+                    createPoofEffect(panda); // <- NOVA CHAMADA DE FUNÇÃO
+                });
+            });
+
+            // --- 4. Lógica para Fechar o Modal ---
+            overlay.addEventListener('click', () => {
+                // Animação de saída do Modal (GSAP)
+                gsap.timeline()
+                    .to(messageBox, { scale: 0.5, opacity: 0, y: 50, duration: 0.3, ease: 'power2.in' })
+                    .to(overlay, { autoAlpha: 0, duration: 0.4 }, "-=0.1"); // Esconde o overlay
+            });
+
+            // Impede que o clique na caixa de mensagem feche o modal
+            messageBox.addEventListener('click', (e) => e.stopPropagation());
+
+            // --- 5. NOVA Função: Animação Bônus (Confetti de Coração) ---
+            function triggerConfetti() {
+                for (let i = 0; i < 30; i++) { // Cria 30 corações
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.classList.add('heart');
+                        heart.style.left = `${Math.random() * 100}vw`; // Posição horizontal aleatória
+                        heart.style.animationDuration = `${Math.random() * 2 + 3}s`; // Duração aleatória (3-5s)
+                        
+                        confettiContainer.appendChild(heart);
+                        
+                        // Remove o coração do DOM depois que a animação termina
+                        setTimeout(() => {
+                            heart.remove();
+                        }, 5000); // Duração máxima da animação
+
+                    }, i * 100); // Solta um coração a cada 100ms
+                }
+            }
+
+            // --- 6. NOVA Função: Animação "Poof" ---
+            function createPoofEffect(element) {
+                // Esconde o panda original rapidamente
+                gsap.to(element, { scale: 0, opacity: 0, duration: 0.3, ease: 'back.in(0.5)' });
+
+                const rect = element.getBoundingClientRect();
+                const sceneRect = document.getElementById('scene').getBoundingClientRect();
+                
+                // Calcula o centro do panda relativo à cena
+                const startTop = rect.top - sceneRect.top + (rect.height / 2);
+                const startLeft = rect.left - sceneRect.left + (rect.width / 2);
+                const numParticles = 8;
+                
+                for (let i = 0; i < numParticles; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('poof-particle');
+                    
+                    // Adiciona a partícula à cena
+                    document.getElementById('scene').appendChild(particle);
+
+                    // Define a posição inicial no centro do panda
+                    // Ajusta para o centro da partícula (metade de 12px = 6px)
+                    particle.style.top = `${startTop - 6}px`;
+                    particle.style.left = `${startLeft - 6}px`;
+                    
+                    // Anima cada partícula
+                    gsap.to(particle, {
+                        x: gsap.utils.random(-60, 60), // Explosão horizontal
+                        y: gsap.utils.random(-60, 60), // Explosão vertical
+                        scale: gsap.utils.random(0.5, 1.5),
+                        opacity: 0,
+                        duration: gsap.utils.random(0.5, 1.0),
+                        ease: 'power3.out',
+                        onComplete: () => {
+                            particle.remove(); // Limpa do DOM
+                        }
+                    });
+                }
+            }
+
+        });
+
+    </script>
+</body>
+</html>
