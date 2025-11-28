@@ -22,7 +22,7 @@
         body {
             font-family: 'Inter', sans-serif;
             /* Fundo animado */
-            background: url('fundo/fundo.gif') no-repeat center center fixed;
+            background: url('/static/imgs/fundo/fundo.gif') no-repeat center center fixed;
             background-size: cover;
             overflow: hidden;
             /* Previne scroll lateral/vertical */
@@ -32,11 +32,6 @@
             height: 100%;
         }
 
-        /* Estilo para a fonte especial da caixa de mensagem */
-        .message-box {
-            font-family: 'Dancing Script', cursive;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
 
         /* ESTILOS PARA O BAMBU */
         .bamboo-stalk {
@@ -95,14 +90,6 @@
         }
 
 
-        .panda-emoji {
-            font-size: 4rem;
-            /* Tamanho maior para o emoji */
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-            /* Sombra para destaque */
-            line-height: 1;
-            /* Para evitar espaçamento extra */
-        }
 
         /* CHÃO DA FLORESTA */
         .ground {
@@ -130,87 +117,76 @@
             /* Brilho */
             opacity: 0;
             /* Começa invisível */
-            z-index: 40;
-            /* Acima de tudo, mas abaixo do modal */
+            z-index: 80;
+            /* Mesmo nível da máscara de luz/escuro */
         }
 
-        /* === NOVOS ESTILOS: Animação Bônus (Corações) === */
-        .heart {
+
+
+        /* Estilos para os pandas do jogo */
+        .game-panda {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #ef4444;
-            /* red-500 */
-            top: -20px;
-            /* Começa fora da tela */
-            transform: rotate(-45deg);
-            animation: fall 5s linear forwards;
-            /* Duração 5s, remove no final */
-            opacity: 0.9;
-            z-index: 48;
-            /* Acima de tudo, menos do modal */
+            cursor: pointer;
+            /* z-index será definido aleatoriamente no JavaScript */
+            transition: transform 0.1s ease;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        .heart::before,
-        .heart::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #ef4444;
-            border-radius: 50%;
+        .game-panda:hover {
+            transform: scale(1.1);
         }
 
-        .heart::before {
-            top: -10px;
-            left: 0;
+        .game-panda:active {
+            transform: scale(0.9);
         }
 
-        .heart::after {
-            top: 0;
-            left: 10px;
+        /* Tamanho padrão para todos os pandas */
+        .game-panda img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
         }
-
-        /* Animação de queda dos corações */
-        @keyframes fall {
-            0% {
-                transform: translateY(0) rotate(-45deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(110vh) rotate(360deg);
-                /* Cai até o fim da tela e gira */
-                opacity: 0;
-            }
+        
+        /* === TAMANHOS INDIVIDUAIS PARA CADA TIPO DE PANDA === */
+        
+        /* Panda 1: Arco Esquerda->Direita (pandaVoando.png) */
+        .panda-type-1 img {
+            width: 180px;
+            height: 180px;
         }
-
-        /* === NOVOS ESTILOS: Animação "Poof" === */
-        .poof-particle {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 204, 0.3) 100%);
-            border-radius: 50%;
-            z-index: 99;
-            /* Alto, mas abaixo do modal */
-            pointer-events: none;
-            /* Não-interativo */
+        
+        /* Panda 2: Arco Direita->Esquerda (pandaVoando.png) */
+        .panda-type-2 img {
+            width: 160px;
+            height: 160px;
+            transform: scaleX(-1); /* Inverte horizontalmente */
         }
-
-        /* === RESPONSIVIDADE PARA CELULAR === */
+        
+        /* Panda 3: Agachamento Aleatório (renam.png) */
+        .panda-type-3 img {
+            width: 220px;
+            height: 220px;
+        }
+        
+        /* Panda 4: Bola de Canhão Vertical (pandaRolando.png) */
+        .panda-type-4 img {
+            width: 140px;
+            height: 140px;
+        }
+        
+        /* Panda 5: Bola de Canhão Horizontal (pandaRolando.png) */
+        .panda-type-5 img {
+            width: 150px;
+            height: 150px;
+        }
+        
+        /* Panda Final: Panda Marrom (renanMarrom.png) - Jumpscare */
+        .panda-final img {
+            width: 300px;
+            height: 300px;
+        }
         @media (max-width: 768px) {
-
-            /* Diminui o tamanho da fonte dos pandas */
-            .panda-emoji {
-                font-size: 3rem;
-                /* Era 4rem */
-            }
-
-            /* Oculta os vaga-lumes para performance e limpeza */
-            .firefly {
-                display: none;
-            }
 
             /* Ajusta a caixa de instruções */
             #instructions {
@@ -220,22 +196,6 @@
                 /* Limita a largura */
             }
 
-            #instructions h2 {
-                font-size: 1.25rem;
-                /* Era 2xl */
-            }
-
-            #instructions p {
-                font-size: 0.875rem;
-                /* Era 1rem */
-            }
-
-            /* Ajusta o contador */
-            #panda-counter {
-                padding: 0.5rem;
-                /* Era p-3 */
-                font-size: 0.875rem;
-            }
 
             /* Ajusta a caixa de mensagem */
             #message-box {
@@ -252,6 +212,22 @@
             .bamboo-mobile-hidden {
                 display: none;
             }
+            
+            /* Ajusta vaga-lumes para telas pequenas */
+            .firefly {
+                width: 6px;
+                height: 6px;
+                /* Reduz tamanho em telas pequenas */
+            }
+        }
+        
+        /* Ajuste específico para telas muito pequenas (360px) */
+        @media (max-width: 360px) {
+            .firefly {
+                width: 4px;
+                height: 4px;
+                /* Tamanho ainda menor para telas muito pequenas */
+            }
         }
     </style>
 </head>
@@ -259,7 +235,7 @@
 <body class="relative w-screen h-screen">
     <!-- Mensagem de orientação para celular -->
     <div id="orientation-message"
-        class="fixed inset-0 bg-black z-[60] flex flex-col items-center justify-center p-4 text-center text-white transition-opacity duration-500 md:hidden">
+        class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center p-4 text-center text-white transition-opacity duration-500 md:hidden">
         <div class="mb-4 text-6xl">🔄</div>
         <h2 class="text-2xl font-bold mb-2">Gire seu celular</h2>
         <p class="text-lg">Para melhor experiência, jogue no modo paisagem (deitado)</p>
@@ -267,13 +243,13 @@
             Cheia</button>
     </div>
     <!-- Canvas para máscara de luz/escuro da introdução -->
-    <canvas id="introCanvas" class="fixed inset-0 z-[49] pointer-events-none"></canvas>
+    <canvas id="introCanvas" class="fixed inset-0 z-[80] pointer-events-none"></canvas>
 
 
 
     <!-- Overlay e Modal (Caixa de Mensagem) -->
     <div id="overlay"
-        class="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+        class="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-sm flex items-center justify-center z-[70]"
         style="visibility: hidden; opacity: 0;">
         <div id="message-box"
             class="message-box bg-white p-8 md-p-12 rounded-2xl shadow-2xl text-center max-w-md mx-4 transform scale-0 opacity-0">
@@ -287,28 +263,24 @@
 
     <!-- A Cena Principal -->
     <div id="scene" class="relative w-full h-full overflow-hidden">
-        <!-- Camada de vegetação rasteira no chão -->
-        <div id="ground-vegetation" class="absolute bottom-0 left-0 w-full h-auto max-h-[40vh] z-40"
-            style="margin-bottom: -50px;">
-            <img src="imgs/matoRasteiro.png" alt="Vegetação rasteira"
-                class="w-full h-full max-h-[40vh] object-cover object-bottom" style="min-height: 200px;">
+        <!-- Container para os Pandas do Jogo -->
+        <div id="panda-game-container" class="absolute inset-0 w-full h-full z-[40] pointer-events-none">
         </div>
 
         <!-- Caixa de Instruções Iniciais -->
         <div id="instructions"
-            class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/30 backdrop-blur-md p-6 rounded-lg text-center text-black shadow-lg z-50 transform transition-all duration-2000"
+            class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/30 backdrop-blur-md p-6 rounded-lg text-center text-black shadow-lg z-[90] transform transition-all duration-2000"
             style="transform: translate(-50%, -50%);">
-            <h2 class="font-bold text-2xl text-black">Encontre os Pandas!</h2>
-            <p class="mt-2 text-black">Clique nos pandas escondidos para revelar uma mensagem especial.</p>
+            <h2 class="font-bold text-2xl text-black">Pegue os Pandas!</h2>
+            <p class="mt-2 text-black">Clique nos pandas antes que eles escapem!</p>
         </div>
 
-
-        <!-- Contador de Pandas -->
-        <div id="panda-counter"
-            class="absolute top-4 left-4 bg-white/30 backdrop-blur-md p-3 rounded-lg text-green-900 font-bold shadow-lg z-30 opacity-0 transition-opacity duration-1000">
-            Pandas encontrados: <span id="found-count">0</span> / <span id="total-pandas">5</span>
+        <!-- Camada de vegetação rasteira no chão -->
+        <div id="ground-vegetation" class="absolute bottom-0 left-0 w-full h-auto max-h-[40vh] z-[50] pointer-events-none"
+            style="margin-bottom: -50px;">
+            <img src="/static/imgs/fundo/matoRasteiro.png" alt="Vegetação rasteira"
+                class="w-full h-full max-h-[40vh] object-cover object-bottom" style="min-height: 200px;">
         </div>
-
 
         <!-- Container para os Confetes/Corações -->
         <div id="confetti-container" class="absolute inset-0 w-full h-full z-40 pointer-events-none overflow-hidden">
@@ -316,31 +288,6 @@
 
 
 
-        <!-- == OS PANDAS == -->
-        <div class="panda absolute bottom-[25%] left-[22%] cursor-pointer z-20 transform -translate-x-1/2 hover:scale-110 transition-transform"
-            data-panda-id="1">
-            <span class="panda-emoji">🐼</span>
-        </div>
-
-        <div class="panda absolute bottom-4 left-[35%] cursor-pointer z-26 hover:scale-110 transition-transform"
-            data-panda-id="2">
-            <span class="panda-emoji">🐼</span>
-        </div>
-
-        <div class="panda absolute bottom-[40%] left-[62%] cursor-pointer z-20 hover:scale-110 transition-transform"
-            data-panda-id="3">
-            <span class="panda-emoji">🐼</span>
-        </div>
-
-        <div class="panda absolute bottom-[80%] left-[78%] cursor-pointer z-20 hover:scale-110 transition-transform"
-            data-panda-id="4">
-            <span class="panda-emoji">🐼</span>
-        </div>
-
-        <div class="panda absolute bottom-[10%] left-[88%] cursor-pointer z-20 hover:scale-110 transition-transform"
-            data-panda-id="5">
-            <span class="panda-emoji">🐼</span>
-        </div>
 
 
         <!-- == OS BAMBUS == -->
@@ -557,33 +504,13 @@
         }, { once: true });
 
 
-        // =======================================================
-        // AQUI ESTÃO OS TEXTOS (BISCOITO DA SORTE)
-        // Modifique este array com suas mensagens
-        // =======================================================
-        const fortuneMessages = [
-            "Você achou um panda! E eu achei a pessoa mais incrível do mundo: você.",
-            "Assim como esse panda, meu coração se agarra em você.",
-            "Sua sorte do dia: ganhar um milhão de beijos. Pode começar a cobrar!",
-            "Esse panda é fofo, mas nem se compara ao seu sorriso.",
-            "Encontrado! E eu soube que tinha encontrado o amor da minha vida no momento em que te vi.",
-            "Prêmio! Você ganhou um vale-abraço apertado, válido para agora.",
-            "Que achado! Tão raro e especial quanto o amor que sinto por você."
-        ];
-        // =======================================================
 
         document.addEventListener('DOMContentLoaded', () => {
             // --- Seletores de Elementos ---
-            const pandas = document.querySelectorAll('.panda');
             const overlay = document.getElementById('overlay');
             const messageBox = document.getElementById('message-box');
             const messageText = document.getElementById('message-text');
             const instructions = document.getElementById('instructions');
-
-            // NOVOS Seletores
-            const pandaCounter = document.getElementById('panda-counter');
-            const foundCountEl = document.getElementById('found-count');
-            const totalPandasEl = document.getElementById('total-pandas');
             const confettiContainer = document.getElementById('confetti-container');
 
             // --- Canvas de Luz/Esconderijo (efeito spotlight dos vaga-lumes) ---
@@ -649,11 +576,6 @@
             };
             requestAnimationFrame(renderMask);
 
-            let foundCount = 0;
-            const totalPandas = pandas.length;
-
-            // Define o número total no contador
-            totalPandasEl.textContent = totalPandas;
 
             // --- 0. NOVO: Variação de Cor dos Bambus ---
             // Criando 5 variações de gradiente baseadas na sua cor
@@ -826,7 +748,7 @@
                 const scene = document.getElementById('scene');
 
                 // Seleciona todos os elementos que vão se mover
-                const parallaxElements = document.querySelectorAll('.bamboo-stalk, .panda');
+                const parallaxElements = document.querySelectorAll('.bamboo-stalk');
 
                 scene.addEventListener('mousemove', (event) => {
                     // Mapeia a posição do mouse de [0, larguraTela] para [-1, 1]
@@ -864,58 +786,523 @@
             }
 
 
-            // --- 4. Lógica de Clique nos Pandas --- (Era o 3)
-            pandas.forEach(panda => {
-                panda.addEventListener('click', (e) => {
-                    // Impede clique duplo se o panda já foi encontrado
-                    if (panda.classList.contains('found')) return;
+            // --- 4. Lógica do Jogo de Pegar Pandas ---
+            const pandaGameContainer = document.getElementById('panda-game-container');
+            const allMessages = [
+                "Você pegou um panda! 🐼",
+    
+            ];
+            
+            let availableMessages = [...allMessages]; // Mensagens disponíveis
+            let gameActive = true;
 
-                    // Toca o som mágico
+            // Configurações dos movimentos
+            const pandaMovements = [
+                {
+                    id: 1,
+                    image: '/static/imgs/pandas/pandaVoando.png',
+                    type: 'arc-physics-left-right'
+                },
+                {
+                    id: 2,
+                    image: '/static/imgs/pandas/pandaVoando.png',
+                    type: 'arc-physics-right-left'
+                },
+                {
+                    id: 3,
+                    image: '/static/imgs/pandas/renam.png',
+                    type: 'squat-random'
+                },
+                {
+                    id: 4,
+                    image: '/static/imgs/pandas/pandaRolando.png',
+                    start: { x: Math.random() * (window.innerWidth - 80), y: window.innerHeight - 80 },
+                    end: { x: Math.random() * (window.innerWidth - 80), y: -80 },
+                    duration: 1800, // Mais rápido (era 2500ms)
+                    type: 'vertical-up'
+                },
+                {
+                    id: 5,
+                    image: '/static/imgs/pandas/pandaRolando.png',
+                    start: { x: -80, y: Math.random() * (window.innerHeight - 200) + 100 },
+                    end: { x: window.innerWidth, y: Math.random() * (window.innerHeight - 200) + 100 },
+                    duration: 800, // Muito mais rápido (era 1400ms)
+                    type: 'horizontal'
+                }
+            ];
+
+            let gameStarted = false;
+            let spawnInterval;
+
+            function createPanda(movementConfig) {
+                const panda = document.createElement('div');
+                panda.className = 'game-panda';
+                // Adiciona classe específica para este tipo de panda
+                panda.classList.add(`panda-type-${movementConfig.id}`);
+                panda.style.pointerEvents = 'auto';
+                
+                // Z-index aleatório entre as camadas dos bambus (5-35)
+                const randomZIndex = Math.floor(Math.random() * 31) + 5; // 5 a 35
+                panda.style.zIndex = randomZIndex;
+                
+                const img = document.createElement('img');
+                img.src = movementConfig.image;
+                img.alt = 'Panda';
+                panda.appendChild(img);
+                
+                let x, y, vx, vy, gravity;
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const baseSpeedX = width * 0.003;
+                const responsiveGravity = height * 0.0003;
+                
+                // Configuração inicial baseada no tipo
+                if (movementConfig.type === 'arc-physics-left-right') {
+                    // 1: Esquerda -> Direita (Arco Perfeito)
+                    x = -80;
+                    // Nasce no terço inferior (75% a 90% da altura)
+                    y = height * 0.75 + Math.random() * (height * 0.15);
+                    gravity = responsiveGravity;
+                    
+                    // CÁLCULO FÍSICO: Define uma altura alvo aleatória (entre 15% e 30% do topo da tela)
+                    const peakHeight1 = (height * 0.15) + Math.random() * (height * 0.15);
+                    const jumpHeight1 = y - peakHeight1;
+                    
+                    // Fórmula: v = sqrt(2 * g * h) -> Velocidade exata para atingir aquela altura
+                    vy = -Math.sqrt(2 * gravity * jumpHeight1);
+                    
+                    // Velocidade X aleatória mas suficiente para cruzar boa parte da tela
+                    vx = baseSpeedX + Math.random() * (width * 0.002);
+                    
+                } else if (movementConfig.type === 'arc-physics-right-left') {
+                    // 2: Direita -> Esquerda (Arco Perfeito)
+                    x = width + 80;
+                    y = height * 0.75 + Math.random() * (height * 0.15);
+                    gravity = responsiveGravity;
+                    
+                    const peakHeight2 = (height * 0.15) + Math.random() * (height * 0.15);
+                    const jumpHeight2 = y - peakHeight2;
+                    
+                    vy = -Math.sqrt(2 * gravity * jumpHeight2);
+                    vx = -(baseSpeedX + Math.random() * (width * 0.002));
+                    
+                } else if (movementConfig.type === 'squat-random') {
+                    // 3: Agachamento em posições aleatórias no chão
+                    // Posição X aleatória (evitando muito perto das bordas)
+                    x = 80 + Math.random() * (width - 160);
+                    // Posição Y no terço inferior da tela (onde fica o chão)
+                    y = height * 0.65 + Math.random() * (height * 0.25);
+                    
+                    panda.style.left = x + 'px';
+                    panda.style.top = y + 'px';
+                    
+                } else {
+                    // Movimentos antigos para os outros tipos
+                    panda.style.left = movementConfig.start.x + 'px';
+                    panda.style.top = movementConfig.start.y + 'px';
+                }
+                
+                pandaGameContainer.appendChild(panda);
+                
+                // Animação baseada no tipo de movimento
+                if (movementConfig.type === 'arc-physics-left-right' || movementConfig.type === 'arc-physics-right-left') {
+                    // Animação com física de arco
+                    let rotation = 0;
+                    const animateArc = () => {
+                        // Atualiza posição com física
+                        vy += gravity;
+                        x += vx;
+                        y += vy;
+                        rotation += 5; // Rotação enquanto voa
+                        
+                        // Atualiza posição do elemento
+                        panda.style.left = x + 'px';
+                        panda.style.top = y + 'px';
+                        panda.style.transform = `rotate(${rotation}deg)`;
+                        
+                        // Verifica se ainda está visível
+                        if ((movementConfig.type === 'arc-physics-left-right' && x < width + 100) ||
+                            (movementConfig.type === 'arc-physics-right-left' && x > -100)) {
+                            if (y < height + 100) { // Ainda não caiu completamente
+                                requestAnimationFrame(animateArc);
+                            } else {
+                                removePanda(panda);
+                            }
+                        } else {
+                            removePanda(panda);
+                        }
+                    };
+                    
+                    // Posição inicial
+                    panda.style.left = x + 'px';
+                    panda.style.top = y + 'px';
+                    requestAnimationFrame(animateArc);
+                    
+                } else if (movementConfig.type === 'squat-random') {
+                    // Animação de agachamento em posição aleatória
+                    gsap.timeline()
+                        .to(panda, {
+                            y: -30,
+                            duration: 0.5,
+                            ease: 'power2.out'
+                        })
+                        .to(panda, {
+                            y: 0,
+                            duration: 0.5,
+                            ease: 'power2.in'
+                        })
+                        .repeat(3)
+                        .eventCallback('onComplete', () => removePanda(panda));
+                } else {
+                    // Animações antigas para os outros tipos
+                    switch(movementConfig.type) {
+                        case 'vertical-up':
+                            gsap.to(panda, {
+                                y: -(window.innerHeight + 80),
+                                rotation: 720,
+                                duration: movementConfig.duration / 1000,
+                                ease: 'power2.out',
+                                onComplete: () => removePanda(panda)
+                            });
+                            break;
+                            
+                        case 'horizontal':
+                            gsap.to(panda, {
+                                x: window.innerWidth + 80,
+                                rotation: 180,
+                                duration: movementConfig.duration / 1000,
+                                ease: 'linear',
+                                onComplete: () => removePanda(panda)
+                            });
+                            break;
+                    }
+                }
+                
+                // Evento de clique
+                panda.addEventListener('click', () => {
+                    if (!gameActive) return; // Não faz nada se o jogo terminou
+                    
                     if (synth) {
                         synth.triggerAttackRelease("C5", "8n");
                     }
-
-                    // Esconde instruções no primeiro clique
-                    if (foundCount === 0) {
-                        gsap.to(instructions, { opacity: 0, duration: 0.5, onComplete: () => instructions.style.display = 'none' });
-                        // MOSTRA O CONTADOR
-                        gsap.to(pandaCounter, { opacity: 1, duration: 1.0, delay: 0.5 });
+                    
+                    // Pega uma mensagem aleatória das disponíveis
+                    if (availableMessages.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * availableMessages.length);
+                        const message = availableMessages[randomIndex];
+                        
+                        // Remove a mensagem usada
+                        availableMessages.splice(randomIndex, 1);
+                        
+                        // Mostra mensagem
+                        messageText.textContent = message;
+                        
+                        gsap.timeline()
+                            .to(overlay, { autoAlpha: 1, duration: 0.3, ease: 'power2.out' })
+                            .fromTo(messageBox,
+                                { scale: 0.5, opacity: 0, y: -30 },
+                                { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' },
+                                "-=0.2");
+                        
+                        // Verifica se todas as mensagens foram usadas
+                        if (availableMessages.length === 0) {
+                            endGame();
+                        }
+                    } else {
+                        // Mensagem padrão se acabaram (não deveria acontecer)
+                        messageText.textContent = "Todas as mensagens foram usadas!";
+                        
+                        gsap.timeline()
+                            .to(overlay, { autoAlpha: 1, duration: 0.3, ease: 'power2.out' })
+                            .fromTo(messageBox,
+                                { scale: 0.5, opacity: 0, y: -30 },
+                                { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' },
+                                "-=0.2");
                     }
-
-                    panda.classList.add('found'); // Marca como encontrado
-                    foundCount++;
-
-                    // ATUALIZA O CONTADOR
-                    foundCountEl.textContent = foundCount;
-
-                    // Pega uma mensagem aleatória
-                    const randomIndex = Math.floor(Math.random() * fortuneMessages.length);
-                    let message = fortuneMessages[randomIndex];
-
-                    // Verifica se todos foram encontrados
-                    if (foundCount === totalPandas) {
-                        // Mensagem final especial
-                        message = "Você encontrou TODOS! O maior prêmio da minha vida foi ter encontrado você. Te amo!";
-                        // DISPARA A ANIMAÇÃO BÔNUS (corações)
-                        triggerConfetti();
-                    }
-
-                    // Atualiza o texto do modal
-                    messageText.textContent = message;
-
-                    // Animação de entrada do Modal (GSAP)
-                    gsap.timeline()
-                        .to(overlay, { autoAlpha: 1, duration: 0.5, ease: 'power2.out' }) // Mostra o overlay
-                        .fromTo(messageBox,
-                            { scale: 0.5, opacity: 0, y: -50 }, // Estado inicial
-                            { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }, // Estado final
-                            "-=0.3"); // Começa um pouco antes do overlay terminar
-
-                    // Esconde o panda encontrado
-                    // gsap.to(panda, { scale: 0, opacity: 0, duration: 0.7, ease: 'back.in(1.7)' }); // <- Linha antiga
-                    createPoofEffect(panda); // <- NOVA CHAMADA DE FUNÇÃO
+                    
+                    // Efeito de captura
+                    gsap.to(panda, {
+                        scale: 1.5,
+                        opacity: 0,
+                        duration: 0.3,
+                        ease: 'back.in(1.7)',
+                        onComplete: () => removePanda(panda)
+                    });
                 });
-            });
+            }
+            
+            function removePanda(panda) {
+                if (panda.parentNode) {
+                    panda.remove();
+                }
+            }
+            
+            function spawnRandomPanda() {
+                if (!gameActive) return; // Não spawna se o jogo terminou
+                
+                const randomMovement = pandaMovements[Math.floor(Math.random() * pandaMovements.length)];
+                
+                // Atualiza posições baseadas no tamanho atual da tela
+                const movement = { ...randomMovement };
+                if (movement.type === 'squat-random') {
+                    // Não precisa de atualização pois usa posição aleatória em tempo real
+                } else if (movement.type === 'vertical-up') {
+                    movement.start = { x: Math.random() * (window.innerWidth - 80), y: window.innerHeight - 80 };
+                    movement.end = { x: movement.start.x, y: -80 };
+                } else if (movement.type === 'horizontal') {
+                    movement.start = { x: -80, y: Math.random() * (window.innerHeight - 200) + 100 };
+                    movement.end = { x: window.innerWidth, y: movement.start.y };
+                }
+                // Os movimentos de arco não precisam de atualização pois usam physics em tempo real
+                
+                createPanda(movement);
+            }
+            
+            function endGame() {
+                gameActive = false;
+                
+                // Para de spawnar novos pandas
+                if (spawnInterval) {
+                    clearInterval(spawnInterval);
+                    spawnInterval = null;
+                }
+                
+                // Remove todos os pandas restantes
+                const remainingPandas = document.querySelectorAll('.game-panda');
+                remainingPandas.forEach(panda => {
+                    gsap.to(panda, {
+                        opacity: 0,
+                        scale: 0,
+                        duration: 0.5,
+                        ease: 'back.in(1.7)',
+                        onComplete: () => removePanda(panda)
+                    });
+                });
+                
+                // Inicia sequência final após 10 segundos (sem mensagem de parabéns)
+                setTimeout(() => {
+                    startFinalSequence();
+                }, 10000);
+            }
+            
+            function startFinalSequence() {
+                // Cria o panda marrom final
+                const finalPanda = document.createElement('div');
+                finalPanda.className = 'game-panda panda-final';
+                // Z-index aleatório entre os bambus também para o panda final
+                const randomZIndex = Math.floor(Math.random() * 31) + 5; // 5 a 35
+                finalPanda.style.zIndex = randomZIndex;
+                finalPanda.style.pointerEvents = 'none';
+                
+                const img = document.createElement('img');
+                img.src = '/static/imgs/pandas/renanMarrom.png';
+                img.alt = 'Panda Marrom';
+                // Removido estilo inline para usar CSS da classe .panda-final
+                finalPanda.appendChild(img);
+                
+                // Posição inicial (embaixo da tela)
+                const startY = window.innerHeight + 100;
+                // === ALTURA FINAL AQUI ===
+                const endY = window.innerHeight * 0.5; // 50% da altura da tela (metade)
+                const centerX = window.innerWidth / 2 - 100; // Centralizado
+                
+                finalPanda.style.left = centerX + 'px';
+                finalPanda.style.top = startY + 'px';
+                
+                pandaGameContainer.appendChild(finalPanda);
+                
+                // Animação de subida lenta
+                gsap.to(finalPanda, {
+                    top: endY,
+                    duration: 8, // 8 segundos para subir lentamente
+                    ease: 'power1.inOut',
+                    onComplete: () => {
+                        // Espera 5 segundos no final
+                        setTimeout(() => {
+                            // Jumpscare
+                            createJumpScare();
+                        }, 5000);
+                    }
+                });
+            }
+            
+            function createJumpScare() {
+                // Remove o panda marrom
+                const finalPanda = document.querySelector('.game-panda');
+                if (finalPanda) {
+                    finalPanda.remove();
+                }
+                
+                // Cria o jumpscare sem fundo escuro
+                const jumpScare = document.createElement('div');
+                jumpScare.style.position = 'fixed';
+                jumpScare.style.top = '0';
+                jumpScare.style.left = '0';
+                jumpScare.style.width = '100vw';
+                jumpScare.style.height = '100vh';
+                jumpScare.style.zIndex = '200'; // Acima de tudo
+                jumpScare.style.display = 'flex';
+                jumpScare.style.alignItems = 'center';
+                jumpScare.style.justifyContent = 'center';
+                // Sem backgroundColor - fundo transparente
+                
+                const jumpScareImg = document.createElement('img');
+                jumpScareImg.src = '/static/imgs/pandas/pandaMarromJumpScare.png';
+                jumpScareImg.alt = 'Jump Scare';
+                jumpScareImg.style.width = '100%';
+                jumpScareImg.style.height = '100%';
+                jumpScareImg.style.objectFit = 'contain';
+                
+                jumpScare.appendChild(jumpScareImg);
+                document.body.appendChild(jumpScare);
+                
+                // Efeito de entrada rápida
+                gsap.fromTo(jumpScare,
+                    { scale: 0, opacity: 0 },
+                    { scale: 1, opacity: 1, duration: 0.2, ease: 'power2.in' }
+                );
+                
+                // Som de jumpscare se disponível
+                if (synth) {
+                    synth.triggerAttackRelease("C2", "16n");
+                }
+                
+                // Remove após 3 segundos e inicia sequência final
+                setTimeout(() => {
+                    gsap.to(jumpScare, {
+                        opacity: 0,
+                        duration: 0.5,
+                        onComplete: () => {
+                            jumpScare.remove();
+                            startEndSequence();
+                        }
+                    });
+                }, 3000);
+            }
+            
+            function startEndSequence() {
+                // Cria overlay escuro para escurecer a tela
+                const darkOverlay = document.createElement('div');
+                darkOverlay.style.position = 'fixed';
+                darkOverlay.style.top = '0';
+                darkOverlay.style.left = '0';
+                darkOverlay.style.width = '100vw';
+                darkOverlay.style.height = '100vh';
+                darkOverlay.style.backgroundColor = 'black';
+                darkOverlay.style.opacity = '0';
+                darkOverlay.style.zIndex = '150';
+                darkOverlay.style.pointerEvents = 'none';
+                document.body.appendChild(darkOverlay);
+                
+                // Escurece a tela por 5 segundos
+                gsap.to(darkOverlay, {
+                    opacity: 0.9,
+                    duration: 5,
+                    ease: 'power2.in',
+                    onComplete: () => {
+                        // Inicia os vaga-lumes invertidos
+                        startReverseFireflies();
+                    }
+                });
+            }
+            
+            function startReverseFireflies() {
+                // Cria vaga-lumes invertidos (aparecendo em vez de desaparecendo)
+                const fireflyCount = 15;
+                const scene = document.getElementById('scene');
+                
+                for (let i = 0; i < fireflyCount; i++) {
+                    const firefly = document.createElement('div');
+                    firefly.className = 'firefly';
+                    firefly.style.zIndex = '160'; // Acima do overlay escuro
+                    
+                    // Posição aleatória
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    firefly.style.left = x + 'px';
+                    firefly.style.top = y + 'px';
+                    firefly.style.opacity = '0'; // Começa invisível
+                    
+                    scene.appendChild(firefly);
+                    
+                    // Animação de aparição dos vaga-lumes
+                    gsap.to(firefly, {
+                        opacity: 1,
+                        duration: 2,
+                        delay: Math.random() * 3, // Aparece em momentos diferentes
+                        ease: 'power2.inOut',
+                        repeat: -1,
+                        yoyo: true,
+                        repeatDelay: Math.random() * 2
+                    });
+                    
+                    // Movimento suave
+                    gsap.to(firefly, {
+                        x: x + (Math.random() - 0.5) * 100,
+                        y: y + (Math.random() - 0.5) * 100,
+                        duration: 4 + Math.random() * 4,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: 'sine.inOut'
+                    });
+                }
+                
+                // Cria o botão continuar
+                const continueBtn = document.createElement('button');
+                continueBtn.textContent = 'continuar';
+                continueBtn.style.position = 'fixed';
+                continueBtn.style.top = '50%';
+                continueBtn.style.left = '50%';
+                continueBtn.style.transform = 'translate(-50%, -50%)';
+                continueBtn.style.zIndex = '170'; // Acima dos vaga-lumes
+                continueBtn.style.padding = '15px 30px';
+                continueBtn.style.fontSize = '18px';
+                continueBtn.style.backgroundColor = 'transparent';
+                continueBtn.style.color = 'white';
+                continueBtn.style.border = '2px solid white';
+                continueBtn.style.borderRadius = '8px';
+                continueBtn.style.cursor = 'pointer';
+                continueBtn.style.opacity = '0';
+                continueBtn.style.pointerEvents = 'auto';
+                
+                // Adiciona evento de clique
+                continueBtn.addEventListener('click', () => {
+                    // Recarrega a página para recomeçar
+                    window.location.reload();
+                });
+                
+                document.body.appendChild(continueBtn);
+                
+                // Mostra o botão com animação
+                gsap.to(continueBtn, {
+                    opacity: 1,
+                    duration: 1,
+                    delay: 2, // Aparece depois dos vaga-lumes
+                    ease: 'power2.inOut'
+                });
+            }
+            
+            function startGame() {
+                if (gameStarted) return;
+                
+                gameStarted = true;
+                
+                // Esconde instruções
+                gsap.to(instructions, { opacity: 0, duration: 0.5, onComplete: () => instructions.style.display = 'none' });
+                
+                // Começa a spawnar pandas
+                spawnInterval = setInterval(() => {
+                    spawnRandomPanda();
+                }, 2500); // Spawn a cada 2.5 segundos (era 1.5s)
+                
+                // Spawna o primeiro panda imediatamente
+                setTimeout(spawnRandomPanda, 500);
+            }
+            
+            // Inicia o jogo após a introdução
+            setTimeout(() => {
+                startGame();
+            }, 10000); // 10 segundos após a introdução
 
             // --- 4. Lógica para Fechar o Modal ---
             overlay.addEventListener('click', () => {
@@ -928,65 +1315,6 @@
             // Impede que o clique na caixa de mensagem feche o modal
             messageBox.addEventListener('click', (e) => e.stopPropagation());
 
-            // --- 5. NOVA Função: Animação Bônus (Confetti de Coração) ---
-            function triggerConfetti() {
-                for (let i = 0; i < 30; i++) { // Cria 30 corações
-                    setTimeout(() => {
-                        const heart = document.createElement('div');
-                        heart.classList.add('heart');
-                        heart.style.left = `${Math.random() * 100}vw`; // Posição horizontal aleatória
-                        heart.style.animationDuration = `${Math.random() * 2 + 3}s`; // Duração aleatória (3-5s)
-
-                        confettiContainer.appendChild(heart);
-
-                        // Remove o coração do DOM depois que a animação termina
-                        setTimeout(() => {
-                            heart.remove();
-                        }, 5000); // Duração máxima da animação
-
-                    }, i * 100); // Solta um coração a cada 100ms
-                }
-            }
-
-            // --- 6. NOVA Função: Animação "Poof" ---
-            function createPoofEffect(element) {
-                // Esconde o panda original rapidamente
-                gsap.to(element, { scale: 0, opacity: 0, duration: 0.3, ease: 'back.in(0.5)' });
-
-                const rect = element.getBoundingClientRect();
-                const sceneRect = document.getElementById('scene').getBoundingClientRect();
-
-                // Calcula o centro do panda relativo à cena
-                const startTop = rect.top - sceneRect.top + (rect.height / 2);
-                const startLeft = rect.left - sceneRect.left + (rect.width / 2);
-                const numParticles = 8;
-
-                for (let i = 0; i < numParticles; i++) {
-                    const particle = document.createElement('div');
-                    particle.classList.add('poof-particle');
-
-                    // Adiciona a partícula à cena
-                    document.getElementById('scene').appendChild(particle);
-
-                    // Define a posição inicial no centro do panda
-                    // Ajusta para o centro da partícula (metade de 12px = 6px)
-                    particle.style.top = `${startTop - 6}px`;
-                    particle.style.left = `${startLeft - 6}px`;
-
-                    // Anima cada partícula
-                    gsap.to(particle, {
-                        x: gsap.utils.random(-60, 60), // Explosão horizontal
-                        y: gsap.utils.random(-60, 60), // Explosão vertical
-                        scale: gsap.utils.random(0.5, 1.5),
-                        opacity: 0,
-                        duration: gsap.utils.random(0.5, 1.0),
-                        ease: 'power3.out',
-                        onComplete: () => {
-                            particle.remove(); // Limpa do DOM
-                        }
-                    });
-                }
-            }
 
         });
 
