@@ -278,7 +278,7 @@
         <!-- Camada de vegetação rasteira no chão -->
         <div id="ground-vegetation" class="absolute bottom-0 left-0 w-full h-auto max-h-[40vh] z-[50] pointer-events-none"
             style="margin-bottom: -50px;">
-            <img src="/static/imgs/fundo/matoRasteiro.png" alt="Vegetação rasteira"
+            <img src="./static/imgs/fundo/matoRasteiro.png" alt="Vegetação rasteira"
                 class="w-full h-full max-h-[40vh] object-cover object-bottom" style="min-height: 200px;">
         </div>
 
@@ -800,22 +800,22 @@
             const pandaMovements = [
                 {
                     id: 1,
-                    image: '/static/imgs/pandas/pandaVoando.png',
+                    image: './static/imgs/pandas/pandaVoando.png',
                     type: 'arc-physics-left-right'
                 },
                 {
                     id: 2,
-                    image: '/static/imgs/pandas/pandaVoando.png',
+                    image: './static/imgs/pandas/pandaVoando.png',
                     type: 'arc-physics-right-left'
                 },
                 {
                     id: 3,
-                    image: '/static/imgs/pandas/renam.png',
+                    image: './static/imgs/pandas/renam.png',
                     type: 'squat-random'
                 },
                 {
                     id: 4,
-                    image: '/static/imgs/pandas/pandaRolando.png',
+                    image: './static/imgs/pandas/pandaRolando.png',
                     start: { x: Math.random() * (window.innerWidth - 80), y: window.innerHeight - 80 },
                     end: { x: Math.random() * (window.innerWidth - 80), y: -80 },
                     duration: 1800, // Mais rápido (era 2500ms)
@@ -823,7 +823,7 @@
                 },
                 {
                     id: 5,
-                    image: '/static/imgs/pandas/pandaRolando.png',
+                    image: './static/imgs/pandas/pandaRolando.png',
                     start: { x: -80, y: Math.random() * (window.innerHeight - 200) + 100 },
                     end: { x: window.innerWidth, y: Math.random() * (window.innerHeight - 200) + 100 },
                     duration: 800, // Muito mais rápido (era 1400ms)
@@ -1095,7 +1095,7 @@
                 finalPanda.style.pointerEvents = 'none';
                 
                 const img = document.createElement('img');
-                img.src = '/static/imgs/pandas/renanMarrom.png';
+                img.src = './static/imgs/pandas/renanMarrom.png';
                 img.alt = 'Panda Marrom';
                 // Removido estilo inline para usar CSS da classe .panda-final
                 finalPanda.appendChild(img);
@@ -1147,7 +1147,7 @@
                 // Sem backgroundColor - fundo transparente
                 
                 const jumpScareImg = document.createElement('img');
-                jumpScareImg.src = '/static/imgs/pandas/pandaMarromJumpScare.png';
+                jumpScareImg.src = './static/imgs/pandas/pandaMarromJumpScare.png';
                 jumpScareImg.alt = 'Jump Scare';
                 jumpScareImg.style.width = '100%';
                 jumpScareImg.style.height = '100%';
